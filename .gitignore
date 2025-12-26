@@ -1,0 +1,29 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# ===== Virtual / Conda environments =====
+.venv/
+env/
+conda/
+miniconda*/
+.env
+
+# ===== Data (DO NOT COMMIT DATASETS) =====
+data/*
+!data/.gitkeep
+
+# ===== Logs & checkpoints =====
+logs/
+checkpoints/
+outputs/
+wandb/
+
+# ===== IDE / Editor =====
+.vscode/
+.idea/
+
+# ===== OS =====
+.DS_Store
+

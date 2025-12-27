@@ -1,61 +1,134 @@
-settings:
-  experiment_id: deu_small_test
+settings:  
+  experiment_id: ${modalities_env:experiment_id}
+  config_file_path: ${modalities_env:config_file_path}
   referencing_keys:
     sample_key: input_ids
     target_key: target_ids
-  training:
-    global_num_seen_tokens: 0
-    global_rank: 0
-    local_rank: 0
-    global_num_training_samples: 0
+    prediction_key: logits
   cuda_env:
-    local_rank: 0
-    global_rank: 0
-    world_size: 1
+    local_rank: ${cuda_env:LOCAL_RANK}
+    global_rank: ${cuda_env:RANK}
+    world_size: ${cuda_env:WORLD_SIZE}
+  paths:
+    checkpoint_saving_path: data/checkpoints
+    train_dataset_path: data/preprocessed/deu_sample_small.pbin
+    train_dataset_index_path: data/preprocessed/deu_sample_small.idx
+  intervals:
+    training_log_interval_in_steps: 5
+    checkpointing_interval_in_steps: 50
+    evaluation_interval_in_steps: 100
+  consistency_enforcement:
+    enforce_tokens_per_step_consistency: true
+    enforce_last_step_logged: false
+    enforce_last_step_evaluated: false
+    enforce_last_step_checkpointed: false
+  step_profile: 
+    gradient_accumulation_steps: 1
+    local_train_micro_batch_size: 2
+    sequence_length: 256
+    dp_degree: ${settings.cuda_env.world_size}
+  training_target:
+    num_target_tokens:
+      component_key: number_conversion
+      variant_key: num_tokens_from_packed_mem_map_dataset_continuous
+      config:
+        dataset_path: ${settings.paths.train_dataset_path}
+        sequence_length: ${settings.step_profile.sequence_length}
+        dp_degree: ${settings.cuda_env.world_size}
+        local_micro_batch_size: ${settings.step_profile.local_train_micro_batch_size}
+        gradient_accumulation_steps: ${settings.step_profile.gradient_accumulation_steps}
+    num_target_steps:
+      component_key: number_conversion
+      variant_key: num_steps_from_num_tokens
+      config:
+        dp_degree: ${settings.cuda_env.world_size}
+        local_micro_batch_size: ${settings.step_profile.local_train_micro_batch_size}
+        global_num_tokens: ${settings.training_target.num_target_tokens}
+        sequence_length: ${settings.step_profile.sequence_length}
+        gradient_accumulation_steps: ${settings.step_profile.gradient_accumulation_steps}
+  training_progress: 
+    global_num_seen_tokens: 0
+    num_seen_steps: 0
+    num_seen_samples: 0
+    last_step: -1
 
-train_dataset:
-  component_key: packed_dataset
-  variant_key: default
-  config:
-    raw_data_path: data/preprocessed/deu_sample_small.pbin
-    index_path: data/preprocessed/deu_sample_small.idx
-    sample_key: ${settings.referencing_keys.sample_key}
-
-train_dataloader:
-  component_key: default_dataloader
-  variant_key: default
-  config:
-    num_workers: 2
-    pin_memory: true
-    shuffle: true
-    dataloader_tag: train
-    dataset:
-      instance_key: train_dataset
-      pass_type: BY_REFERENCE
-
-collator:
-  component_key: gpt_2_llm_collator
-  variant_key: default
+collate_fn:
+  component_key: collate_fn
+  variant_key: gpt_2_llm_collator
   config:
     sample_key: ${settings.referencing_keys.sample_key}
     target_key: ${settings.referencing_keys.target_key}
 
-model:
-  component_key: gpt2
+train_dataset:
+  component_key: dataset
+  variant_key: packed_mem_map_dataset_continuous
+  config:
+    raw_data_path: ${settings.paths.train_dataset_path}
+    sequence_length: ${settings.step_profile.sequence_length}
+    sample_key: ${settings.referencing_keys.sample_key}
+
+train_dataloader:
+  component_key: data_loader
   variant_key: default
   config:
-    sample_key: ${settings.referencing_keys.sample_key}
-    block_size: 256
-    vocab_size: 50257
-    n_layer: 4
-    n_head: 4
-    n_embd: 256
-    dropout: 0.0
-    bias: true
+    num_workers: 2
+    pin_memory: true
+    dataloader_tag: train
+    dataset:
+      instance_key: train_dataset
+      pass_type: BY_REFERENCE
+    batch_sampler:
+      component_key: batch_sampler
+      variant_key: default
+      config:
+        batch_size: ${settings.step_profile.local_train_micro_batch_size}
+        drop_last: true
+        sampler:
+          component_key: sampler
+          variant_key: resumable_distributed_sampler
+          config:
+            dataset:
+              instance_key: train_dataset
+              pass_type: BY_REFERENCE
+            rank: ${settings.cuda_env.global_rank}
+            num_replicas: ${settings.cuda_env.world_size}
+            shuffle: true
+            seed: 42
+            drop_last: true
+            skip_num_global_samples: ${settings.training_progress.num_seen_samples}
+    collate_fn:
+      instance_key: collate_fn
+      pass_type: BY_REFERENCE
+
+eval_dataloaders: []
+
+checkpoint_saving:
+  component_key: checkpoint_saving
+  variant_key: default
+  config:
+    checkpoint_saving_strategy:
+      component_key: checkpoint_saving_strategy
+      variant_key: save_k_most_recent_checkpoints_strategy
+      config:
+        k: -1
+    checkpoint_saving_execution:
+      component_key: checkpoint_saving_execution
+      variant_key: fsdp1
+      config:
+        checkpoint_path: ${settings.paths.checkpoint_saving_path}
+        global_rank: ${settings.cuda_env.global_rank}
+        experiment_id: ${settings.experiment_id}
+
+loss_fn:
+  component_key: loss
+  variant_key: clm_cross_entropy_loss
+  config:
+    target_key: ${settings.referencing_keys.target_key}
+    prediction_key: ${settings.referencing_keys.prediction_key}
 
 wrapped_model:
-  component_key: fsdp_wrapped_model
-  variant_key: default
+  component_key: model
+  variant_key: fsdp_wrapped
   config:
     model:
       instance_key: model
@@ -63,51 +136,120 @@ wrapped_model:
     sync_module_states: true
     mixed_precision_settings: BF_16
     sharding_strategy: FULL_SHARD
+    block_names: [GPT2Block]
 
-optimizer:
-  component_key: adamw
-  variant_key: default
+model:
+  component_key: model
+  variant_key: model_initialized
   config:
-    lr: 1e-4
-    betas: [0.9, 0.95]
-    eps: 1e-8
-    weight_decay: 0.1
-    wrapped_model:
-      instance_key: wrapped_model
+    model:
+      instance_key: model_raw
       pass_type: BY_REFERENCE
+    model_initializer:
+      component_key: model_initialization
+      variant_key: composed
+      config:
+        model_type: gpt2
+        weight_init_type: scaled
+        mean: 0.0
+        std: 0.02
+        num_layers: ${model_raw.config.n_layer}
+
+model_raw:
+  component_key: model
+  variant_key: gpt2
+  config:
+    sample_key: ${settings.referencing_keys.sample_key}
+    poe_type: NOPE
+    sequence_length: ${settings.step_profile.sequence_length}
+    prediction_key: ${loss_fn.config.prediction_key}
+    vocab_size: 50304
+    n_layer: 4
+    n_head_q: 4
+    n_head_kv: 4
+    ffn_hidden: 256
+    n_embd: 256
+    dropout: 0.0
+    bias: false
+    attention_config:
+      qkv_transforms:
+      - type_hint: RotaryTransform
+        config:
+          n_embd: ${model_raw.config.n_embd}
+          n_head: ${model_raw.config.n_head_q}
+          seq_length_dim: -2
+          base_freq: 100000
+    attention_implementation: pytorch_flash
+    activation_type: swiglu
+    attention_norm_config:
+      norm_type: rms_norm
+      config:
+        ndim: ${model_raw.config.n_embd}
+        bias: true
+        epsilon: 1e-5
+    ffn_norm_config:
+      norm_type: rms_norm
+      config:
+        ndim: ${model_raw.config.n_embd}
+        bias: true
+        epsilon: 1e-5
+    lm_head_norm_config:
+      norm_type: rms_norm
+      config:
+        ndim: ${model_raw.config.n_embd}
+        bias: true
+        epsilon: 1e-5
 
 scheduler:
-  component_key: constant_lr_scheduler
-  variant_key: default
+  component_key: scheduler
+  variant_key: onecycle_lr
   config:
     optimizer:
       instance_key: optimizer
       pass_type: BY_REFERENCE
+    max_lr: 1e-4
+    div_factor: 10
+    final_div_factor: 1
+    total_steps: ${settings.training_target.num_target_steps}
+    pct_start: 0.01
+    anneal_strategy: cos
+    last_epoch: ${settings.training_progress.last_step}
 
-loss_fn:
-  component_key: clm_cross_entropy_loss
-  variant_key: default
+optimizer:
+  component_key: optimizer
+  variant_key: adam_w
   config:
-    target_key: ${settings.referencing_keys.target_key}
-    prediction_key: logits
+    lr: 0.0001
+    betas: [0.9, 0.95]
+    eps: 1e-8
+    weight_decay: 1e-1
+    weight_decay_groups_excluded: [embedding, layernorm]
+    wrapped_model: 
+      instance_key: wrapped_model
+      pass_type: BY_REFERENCE
 
-checkpointing:
-  component_key: checkpoint_saving
-  variant_key: default
+gradient_clipper:
+  component_key: gradient_clipper
+  variant_key: fsdp
   config:
-    checkpoint_saving_strategy: SAVE_EVERY_N_STEPS
-    checkpoint_saving_interval: 50
-    checkpoint_path: data/checkpoints
+    wrapped_model:
+      instance_key: wrapped_model
+      pass_type: BY_REFERENCE
+    norm_type: P2_NORM
+    max_norm: 1.0
 
-training:
-  component_key: training
-  variant_key: default
+progress_subscriber:
+  component_key: progress_subscriber
+  variant_key: dummy
+  config: {}
+
+evaluation_subscriber:
+  component_key: results_subscriber
+  variant_key: wandb
   config:
     global_rank: ${settings.cuda_env.global_rank}
+    project: deu_small_test
+    mode: OFFLINE
     experiment_id: ${settings.experiment_id}
-    training_log_interval_in_steps: 5
-    checkpointing_interval_in_steps: 50
-    evaluation_interval_in_steps: 100
-    global_num_training_samples: 0
-    global_num_seen_tokens: ${settings.training.global_num_seen_tokens}
-    num_steps: 1000
+    directory: wandb_storage
+    config_file_path: ${settings.config_file_path}

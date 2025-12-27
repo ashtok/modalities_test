@@ -68,9 +68,11 @@ settings:
 # ------------------------------------------------------------------
 dp_degree:
   component_key: number_conversion
-  variant_key: constant
+  variant_key: world_size_from_cuda_env
   config:
-    value: 1
+    world_size:
+      instance_key: settings.cuda_env.world_size
+      pass_type: BY_REFERENCE
 
 # ------------------------------------------------------------------
 

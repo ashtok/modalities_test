@@ -71,8 +71,9 @@ dp_degree:
   variant_key: world_size_from_cuda_env
   config:
     world_size:
-      instance_key: settings.cuda_env.world_size
+      instance_key: runtime.distributed.world_size
       pass_type: BY_REFERENCE
+
 
 # ------------------------------------------------------------------
 

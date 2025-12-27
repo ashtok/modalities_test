@@ -1,0 +1,27 @@
+mkdir -p data/raw
+cd data/raw
+
+wget -O - https://data.hplt-project.org/three/sorted/deu_Latn.map
+
+wget -O - https://data.hplt-project.org/three/sorted/deu_Latn.map | wget -x -nH --cut-dirs=2 -i -
+
+
+cd data/raw/deu_Latn
+for z in *.jsonl.zst; do
+    zstd -d "$z" && rm "$z"
+done
+
+
+OPTIONAL Combine into 1 File
+
+cat *.jsonl > german_hplt3.jsonl
+
+# Download two shards
+wget https://data.hplt-project.org/three/sorted/deu_Latn/5_1.jsonl.zst
+wget https://data.hplt-project.org/three/sorted/deu_Latn/6_1.jsonl.zst
+
+# Decompress them (produces .jsonl files)
+zstd -d 5_1.jsonl.zst
+zstd -d 6_1.jsonl.zst
+
+zstd -dc deu_sample.jsonl.zst | head -n 100000 > deu_sample_small.jsonl

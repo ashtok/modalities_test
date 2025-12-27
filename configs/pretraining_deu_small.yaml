@@ -1,0 +1,50 @@
+app_state:
+  experiment_name: deu_small_test
+  seed: 42
+  save_dir: data/checkpoints
+  log_dir: data/logs
+
+settings:
+  dataset:
+    src_path: data/preprocessed/deu_sample_small.pbin
+    index_path: data/preprocessed/deu_sample_small.idx
+    eod_token: <|endoftext|>
+  num_cpus: 2
+  batch_size: 2
+  max_steps: 1000
+  precision: bf16
+  log_every_n_steps: 5
+  save_every_n_steps: 50
+
+train_dataset:
+  component_key: packed_dataset
+  config:
+    path: data/preprocessed/deu_sample_small.pbin
+    index_path: data/preprocessed/deu_sample_small.idx
+    shuffle: true
+
+train_dataloader:
+  component_key: default_dataloader
+  config:
+    batch_size: 2
+    num_workers: 2
+
+model:
+  component_key: gpt2
+  config:
+    type: gpt2
+    vocab_size: 50257
+    n_embd: 256
+    n_layer: 4
+    n_head: 4
+    max_position_embeddings: 256
+
+optimizer:
+  component_key: adamw
+  config:
+    lr: 1e-4
+
+loss_fn:
+  component_key: cross_entropy_loss
+  config:
+    ignore_index: -100   # usually used to ignore padding tokens

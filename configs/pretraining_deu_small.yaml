@@ -102,14 +102,6 @@ train_dataloader:
 
 eval_dataloaders: []
 
-app_state:
-  component_key: app_state
-  variant_key: default
-  config:
-    experiment_id: ${settings.experiment_id}
-    workspace: .
-    global_rank: ${settings.cuda_env.global_rank}
-    
 checkpoint_saving:
   component_key: checkpoint_saving
   variant_key: default

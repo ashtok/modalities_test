@@ -1,50 +1,113 @@
-app_state:
-  experiment_name: deu_small_test
-  seed: 42
-  save_dir: data/checkpoints
-  log_dir: data/logs
-
 settings:
-  dataset:
-    src_path: data/preprocessed/deu_sample_small.pbin
-    index_path: data/preprocessed/deu_sample_small.idx
-    eod_token: <|endoftext|>
-  num_cpus: 2
-  batch_size: 2
-  max_steps: 1000
-  precision: bf16
-  log_every_n_steps: 5
-  save_every_n_steps: 50
+  experiment_id: deu_small_test
+  referencing_keys:
+    sample_key: input_ids
+    target_key: target_ids
+  training:
+    global_num_seen_tokens: 0
+    global_rank: 0
+    local_rank: 0
+    global_num_training_samples: 0
+  cuda_env:
+    local_rank: 0
+    global_rank: 0
+    world_size: 1
 
 train_dataset:
   component_key: packed_dataset
+  variant_key: default
   config:
-    path: data/preprocessed/deu_sample_small.pbin
+    raw_data_path: data/preprocessed/deu_sample_small.pbin
     index_path: data/preprocessed/deu_sample_small.idx
-    shuffle: true
+    sample_key: ${settings.referencing_keys.sample_key}
 
 train_dataloader:
   component_key: default_dataloader
+  variant_key: default
   config:
-    batch_size: 2
     num_workers: 2
+    pin_memory: true
+    shuffle: true
+    dataloader_tag: train
+    dataset:
+      instance_key: train_dataset
+      pass_type: BY_REFERENCE
+
+collator:
+  component_key: gpt_2_llm_collator
+  variant_key: default
+  config:
+    sample_key: ${settings.referencing_keys.sample_key}
+    target_key: ${settings.referencing_keys.target_key}
 
 model:
   component_key: gpt2
+  variant_key: default
   config:
-    type: gpt2
+    sample_key: ${settings.referencing_keys.sample_key}
+    block_size: 256
     vocab_size: 50257
-    n_embd: 256
     n_layer: 4
     n_head: 4
-    max_position_embeddings: 256
+    n_embd: 256
+    dropout: 0.0
+    bias: true
+
+wrapped_model:
+  component_key: fsdp_wrapped_model
+  variant_key: default
+  config:
+    model:
+      instance_key: model
+      pass_type: BY_REFERENCE
+    sync_module_states: true
+    mixed_precision_settings: BF_16
+    sharding_strategy: FULL_SHARD
 
 optimizer:
   component_key: adamw
+  variant_key: default
   config:
     lr: 1e-4
+    betas: [0.9, 0.95]
+    eps: 1e-8
+    weight_decay: 0.1
+    wrapped_model:
+      instance_key: wrapped_model
+      pass_type: BY_REFERENCE
+
+scheduler:
+  component_key: constant_lr_scheduler
+  variant_key: default
+  config:
+    optimizer:
+      instance_key: optimizer
+      pass_type: BY_REFERENCE
 
 loss_fn:
-  component_key: cross_entropy_loss
+  component_key: clm_cross_entropy_loss
+  variant_key: default
   config:
-    ignore_index: -100   # usually used to ignore padding tokens
+    target_key: ${settings.referencing_keys.target_key}
+    prediction_key: logits
+
+checkpointing:
+  component_key: checkpoint_saving
+  variant_key: default
+  config:
+    checkpoint_saving_strategy: SAVE_EVERY_N_STEPS
+    checkpoint_saving_interval: 50
+    checkpoint_path: data/checkpoints
+
+training:
+  component_key: training
+  variant_key: default
+  config:
+    global_rank: ${settings.cuda_env.global_rank}
+    experiment_id: ${settings.experiment_id}
+    training_log_interval_in_steps: 5
+    checkpointing_interval_in_steps: 50
+    evaluation_interval_in_steps: 100
+    global_num_training_samples: 0
+    global_num_seen_tokens: ${settings.training.global_num_seen_tokens}
+    num_steps: 1000

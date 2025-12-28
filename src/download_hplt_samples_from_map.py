@@ -24,15 +24,15 @@ def run(cmd):
 
 
 def fetch_map(lang):
-    """Download the .map file and return a list of shard filenames."""
+    """Download the .map file and return a list of shard URLs."""
     map_url = f"{BASE_URL}/{lang}.map"
     print(f"Fetching map: {map_url}")
     response = requests.get(map_url)
     response.raise_for_status()
 
-    # Each line in the .map file corresponds to a shard filename
-    files = [line.strip() for line in response.text.splitlines() if line.strip()]
-    return files
+    # Each line in the .map file is already a complete URL
+    urls = [line.strip() for line in response.text.splitlines() if line.strip()]
+    return urls
 
 
 def main():
@@ -42,16 +42,18 @@ def main():
     for lang in LANGUAGES:
         print(f"\nProcessing language: {lang}")
 
-        files = fetch_map(lang)
+        shard_urls = fetch_map(lang)
 
-        if len(files) <= TARGET_INDEX:
+        if len(shard_urls) <= TARGET_INDEX:
             raise RuntimeError(f"Not enough shards for {lang}")
 
-        shard = files[TARGET_INDEX]
-        shard_url = f"{BASE_URL}/{lang}/{shard}"
+        shard_url = shard_urls[TARGET_INDEX]
+
+        # Extract just the filename from the URL
+        shard_filename = shard_url.split('/')[-1]
 
         # Save just as the shard filename in data/raw
-        zst_path = RAW_DIR / shard
+        zst_path = RAW_DIR / shard_filename
         output_path = RAW_DIR / f"{lang}_sample_small.jsonl"
 
         # 1. Download selected shard

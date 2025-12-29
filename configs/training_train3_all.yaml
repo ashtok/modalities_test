@@ -140,14 +140,13 @@ loss_fn:
 # CRITICAL: Load pretrained GPT-2 from HuggingFace
 model_raw:
   component_key: model
-  variant_key: huggingface_pretrained
+  variant_key: huggingface_pretrained_model
   config:
     model_type: AutoModelForCausalLM
     model_name: gpt2
     prediction_key: ${settings.referencing_keys.prediction_key}
     huggingface_prediction_subscription_key: logits
     sample_key: ${settings.referencing_keys.sample_key}
-
 wrapped_model:
   component_key: model
   variant_key: fsdp1_wrapped

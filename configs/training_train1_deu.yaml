@@ -1,5 +1,6 @@
-# Fixed Training Config - Uses Direct Component Specification
-# This bypasses the registry by directly specifying the class
+# Fine-tune GPT-2 on German only
+# Dataset: train1_deu.pbin
+# Checkpoints: data/checkpoints/exp1_german_only
 
 settings:
   experiment_id: exp1_german_only_${modalities_env:experiment_id}
@@ -136,18 +137,15 @@ loss_fn:
     target_key: ${settings.referencing_keys.target_key}
     prediction_key: ${settings.referencing_keys.prediction_key}
 
-# Try direct class specification
 model_raw:
   component_key: model
-  variant_key: direct
+  variant_key: huggingface_pretrained_model
   config:
-    class_path: modalities.models.huggingface.huggingface_model.HuggingFacePretrainedModel
-    config:
-      model_type: AutoModelForCausalLM
-      model_name: gpt2
-      prediction_key: ${settings.referencing_keys.prediction_key}
-      huggingface_prediction_subscription_key: logits
-      sample_key: ${settings.referencing_keys.sample_key}
+    model_type: AutoModelForCausalLM
+    model_name: gpt2
+    prediction_key: ${settings.referencing_keys.prediction_key}
+    huggingface_prediction_subscription_key: logits
+    sample_key: ${settings.referencing_keys.sample_key}
 
 wrapped_model:
   component_key: model
@@ -169,7 +167,7 @@ optimizer:
     betas: [0.9, 0.999]
     eps: 1e-8
     weight_decay: 0.01
-    weight_decay_groups_excluded: [embedding, layernorm]
+    weight_decay_groups_excluded: []
     wrapped_model:
       instance_key: wrapped_model
       pass_type: BY_REFERENCE

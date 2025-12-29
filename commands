@@ -24,4 +24,97 @@ wget https://data.hplt-project.org/three/sorted/deu_Latn/6_1.jsonl.zst
 zstd -d 5_1.jsonl.zst
 zstd -d 6_1.jsonl.zst
 
-zstd -dc deu_sample.jsonl.zst | head -n 100000 > deu_sample_small.jsonl
+zstd -dc 6_1.jsonl.zst | head -n 500000 > deu_sample_small.jsonl
+
+If you stay in ~/modalities_test/data:
+
+modalities data create_raw_index \
+    --index_path preprocessed/deu_sample_small.idx \
+    raw/deu_Latn/deu_sample_small.jsonl
+
+
+Same files, correct relative paths.
+
+If you stay in ~/modalities_test:
+
+modalities data pack_encoded_data configs/tokenization_deu_small.yaml
+
+
+run in interactive session
+
+CUDA_VISIBLE_DEVICES=0 torchrun --standalone --nnodes=1 --nproc_per_node=1 $(which modalities) run --config_file_path configs/pretraining_deu_small.yaml
+
+SLURM JOB!!!
+
+nano modalities_job.sh
+
+#!/bin/bash
+#SBATCH --job-name=modalities_train
+#SBATCH --partition=standard           # Adjust to your cluster's GPU partition
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1            # 1 task, torchrun spawns processes
+#SBATCH --gres=gpu:1                   # Request 1 GPU
+#SBATCH --cpus-per-task=4              # Adjust based on your needs
+#SBATCH --mem=16G                      # Adjust based on your needs
+#SBATCH --time=24:00:00                # Set appropriate time limit
+#SBATCH --output=slurm-%j.out
+
+# Activate your conda environment
+source ~/miniconda3/bin/activate modalities
+
+# Run the training command
+# Note: CUDA_VISIBLE_DEVICES is handled automatically by Slurm when using --gres=gpu
+srun torchrun --standalone \
+    --nnodes=1 \
+    --nproc_per_node=1 \
+    $(which modalities) run \
+    --config_file_path configs/pretraining_deu_small.yaml
+
+
+chmod +x modalities_job.sh
+
+sbatch modalities_job.sh
+
+tail -f slurm-2138151.out
+
+
+
+(modalities) s472389@julia2 ~/modalities_test $ du -sh ~/modalities_test
+29G     /home/s472389/modalities_test
+(modalities) s472389@julia2 ~/modalities_test $ du -sh ~/modalities_test
+29G     /home/s472389/modalities_test
+(modalities) s472389@julia2 ~/modalities_test $ squeue -u s472389
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+           2138178  standard modaliti  s472389  R    1:26:33      1 jnfat02
+(modalities) s472389@julia2 ~/modalities_test $
+
+
+
+tar -czvf checkpoint_backup.tar.gz eid_2025-12-27__23-05-14_a535941fb82852f1-model-seen_steps_1022000-seen_tokens_523264000-target_steps_1023268-target_tokens_523913216.bin
+python convert_checkpoint_to_hf_format.py
+
+
+
+git clone https://github.com/EleutherAI/lm-evaluation-harness.git
+cd lm-evaluation-harness
+conda create -n lm_eval python=3.11 -y
+conda activate lm_eval
+pip install torch transformers datasets
+pip install accelerate
+pip install protobuf
+
+
+
+cd ~/modalities_test/lm-evaluation-harness
+pip install -e .
+
+python -m lm_eval evaluate --help
+
+
+python -m lm_eval run \
+    --model hf \
+    --model_args pretrained=~/modalities_test/data/checkpoints/2025-12-27__23-05-14_a535941fb82852f1/hf_checkpoint_deu_small \
+    --tasks multiblimp_deu \
+    --device cuda:0 \
+    --batch_size 1 \
+    --gen_kwargs temperature=0.0 top_p=1.0

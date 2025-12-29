@@ -1,0 +1,20 @@
+settings:
+  src_path: data/merged/train1_deu.jsonl
+  index_path: data/preprocessed/train1_deu.idx
+  dst_path: data/preprocessed/train1_deu.pbin
+
+  jq_pattern: .text
+  eod_token: <|endoftext|>
+
+  num_cpus: 8
+  processing_batch_size: 10
+  raw_samples_queue_size: 300
+  processed_samples_queue_size: 300
+
+tokenizer:
+  component_key: tokenizer
+  variant_key: pretrained_hf_tokenizer
+  config:
+    pretrained_model_name_or_path: gpt2
+    padding: false
+    truncation: false

@@ -48,31 +48,21 @@ def main():
             raise RuntimeError(f"Not enough shards for {lang}")
 
         shard_url = shard_urls[TARGET_INDEX]
-
+        
         # Extract just the filename from the URL
         shard_filename = shard_url.split('/')[-1]
-
-        # Save just as the shard filename in data/raw
-        zst_path = RAW_DIR / shard_filename
+        
+        # Include language in the temporary filename
+        zst_path = RAW_DIR / f"{lang}_{shard_filename}"
         output_path = RAW_DIR / f"{lang}_sample_small.jsonl"
 
-        # 1. Download selected shard
-        run([
-            "wget",
-            "-O",
-            str(zst_path),
-            shard_url
-        ])
-
-        # 2. Decompress + take first NUM_LINES
+        # Download and process in one step (stream decompression, don't save full file)
+        print(f"Downloading and extracting first {NUM_LINES} lines from {shard_url}")
         run([
             "bash",
             "-c",
-            f"zstd -dc {zst_path} | head -n {NUM_LINES} > {output_path}"
+            f"wget -qO- {shard_url} | zstd -dc | head -n {NUM_LINES} > {output_path}"
         ])
-
-        # 3. Cleanup the compressed file
-        zst_path.unlink()
 
         print(f"Saved: {output_path}")
 

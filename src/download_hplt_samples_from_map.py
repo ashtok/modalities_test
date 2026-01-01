@@ -13,7 +13,7 @@ LANGUAGES = [
 
 BASE_URL = "https://data.hplt-project.org/three/sorted"
 RAW_DIR = Path("data/raw")  # target folder for processed files
-NUM_LINES = 500_000
+NUM_LINES = 1_000_000
 TARGET_INDEX = 2  # pick the third file (0-based index)
 
 
@@ -42,9 +42,9 @@ def main():
     for lang in LANGUAGES:
         print(f"\nProcessing language: {lang}")
         if lang == "deu_Latn":
-            NUM_LINES = 1500000
+            NUM_LINES = 2_000_000
         else:
-            NUM_LINES = 1_500_000
+            NUM_LINES = 1_000_000
         
         shard_urls = fetch_map(lang)
 

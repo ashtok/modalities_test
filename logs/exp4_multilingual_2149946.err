@@ -1,0 +1,51 @@
+W0101 19:25:57.900000 3326911 site-packages/torch/distributed/run.py:803] 
+W0101 19:25:57.900000 3326911 site-packages/torch/distributed/run.py:803] *****************************************
+W0101 19:25:57.900000 3326911 site-packages/torch/distributed/run.py:803] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0101 19:25:57.900000 3326911 site-packages/torch/distributed/run.py:803] *****************************************
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py:167: FutureWarning: With version 0.4, we upgraded FSDP to FSDP 2.0. Use get_fsdp_2_wrapped_model(...) and FSDP2WrappedModelConfig instead.
+  comp_config = component_config_type(**config_dict, strict=True)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py:194: FutureWarning: With version 0.4, we upgraded FSDP to FSDP 2.0. Use GeneralModelFactory.get_fsdp2_wrapped_model(...) instead.
+  component = component_type(**component_config_dict)
+model_factory - INFO - Rank 2 unsharded number of parameters: 124439808
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py:167: FutureWarning: With version 0.4, we upgraded FSDP to FSDP 2.0. Use get_fsdp_2_wrapped_model(...) and FSDP2WrappedModelConfig instead.
+  comp_config = component_config_type(**config_dict, strict=True)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py:194: FutureWarning: With version 0.4, we upgraded FSDP to FSDP 2.0. Use GeneralModelFactory.get_fsdp2_wrapped_model(...) instead.
+  component = component_type(**component_config_dict)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py:167: FutureWarning: With version 0.4, we upgraded FSDP to FSDP 2.0. Use get_fsdp_2_wrapped_model(...) and FSDP2WrappedModelConfig instead.
+  comp_config = component_config_type(**config_dict, strict=True)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py:194: FutureWarning: With version 0.4, we upgraded FSDP to FSDP 2.0. Use GeneralModelFactory.get_fsdp2_wrapped_model(...) instead.
+  component = component_type(**component_config_dict)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py:167: FutureWarning: With version 0.4, we upgraded FSDP to FSDP 2.0. Use get_fsdp_2_wrapped_model(...) and FSDP2WrappedModelConfig instead.
+  comp_config = component_config_type(**config_dict, strict=True)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py:194: FutureWarning: With version 0.4, we upgraded FSDP to FSDP 2.0. Use GeneralModelFactory.get_fsdp2_wrapped_model(...) instead.
+  component = component_type(**component_config_dict)
+model_factory - INFO - Rank 3 unsharded number of parameters: 124439808
+model_factory - INFO - Rank 1 unsharded number of parameters: 124439808
+model_factory - INFO - Rank 0 unsharded number of parameters: 124439808
+model_factory - INFO - Rank 0 sharded number of parameters: 31109952
+INFO:model_factory:Rank 0 sharded number of parameters: 31109952
+model_factory - INFO - Rank 2 sharded number of parameters: 31109952
+INFO:model_factory:Rank 2 sharded number of parameters: 31109952
+model_factory - INFO - Rank 1 sharded number of parameters: 31109952
+INFO:model_factory:Rank 1 sharded number of parameters: 31109952
+model_factory - INFO - Rank 3 sharded number of parameters: 31109952
+INFO:model_factory:Rank 3 sharded number of parameters: 31109952
+wandb: Tracking run with wandb version 0.23.1
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in /home/s472389/modalities_test/wandb_storage/wandb/offline-run-20260101_192611-6ti5wxjr
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/util.py:38: UserWarning: [91m Last step will not be logged. Since remaining_steps (174352) is not a multiple of training_log_interval_in_steps (100) [00m
+  warnings.warn(message_with_color_code)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/util.py:38: UserWarning: [91m Last step will not be evaluated. Since remaining_steps (174352) is not a multiple of evaluation_interval_in_steps (1000) [00m
+  warnings.warn(message_with_color_code)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/util.py:38: UserWarning: [91m Last step will not be checkpointed. Since remaining_steps (174352) is not a multiple of checkpointing_interval_in_steps (5000) [00m
+  warnings.warn(message_with_color_code)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py:4876: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  warnings.warn(  # warn only once
+main - INFO - Training model with 124439808 parameters.
+main - INFO - Training model with 124439808 parameters.
+main - INFO - Training model with 124439808 parameters.
+INFO:main:Training model with 124439808 parameters.
+INFO:main:Training model with 124439808 parameters.
+INFO:main:Training model with 124439808 parameters.
+main - INFO - Training model with 124439808 parameters.
+INFO:main:Training model with 124439808 parameters.

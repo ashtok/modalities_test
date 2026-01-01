@@ -1,0 +1,113 @@
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/registry/registry.py", line 87, in _get_entity
+[rank0]:     return self._registry_dict[component_key][variant_key]
+[rank0]:            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+[rank0]: KeyError: 'direct'
+
+[rank0]: The above exception was the direct cause of the following exception:
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/__main__.py", line 104, in CMD_entry_point_run_modalities
+[rank0]:     components = main_obj.build_components(components_model_type=TrainingComponentsInstantiationModel)
+[rank0]:                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/main.py", line 85, in build_components
+[rank0]:     components = self.component_factory.build_components(
+[rank0]:                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py", line 42, in build_components
+[rank0]:     component_dict = self._build_config(
+[rank0]:                      ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py", line 59, in _build_config
+[rank0]:     components, _ = self._build_component(
+[rank0]:                     ^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py", line 83, in _build_component
+[rank0]:     materialized_component_config[sub_entity_key], top_level_components = self._build_component(
+[rank0]:                                                                           ^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py", line 83, in _build_component
+[rank0]:     materialized_component_config[sub_entity_key], top_level_components = self._build_component(
+[rank0]:                                                                           ^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py", line 83, in _build_component
+[rank0]:     materialized_component_config[sub_entity_key], top_level_components = self._build_component(
+[rank0]:                                                                           ^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py", line 118, in _build_component
+[rank0]:     materialized_referenced_component, top_level_components = self._build_component(
+[rank0]:                                                               ^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py", line 83, in _build_component
+[rank0]:     materialized_component_config[sub_entity_key], top_level_components = self._build_component(
+[rank0]:                                                                           ^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py", line 83, in _build_component
+[rank0]:     materialized_component_config[sub_entity_key], top_level_components = self._build_component(
+[rank0]:                                                                           ^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py", line 118, in _build_component
+[rank0]:     materialized_referenced_component, top_level_components = self._build_component(
+[rank0]:                                                               ^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py", line 95, in _build_component
+[rank0]:     current_component_config = self._instantiate_component_config(
+[rank0]:                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py", line 160, in _instantiate_component_config
+[rank0]:     component_config_type: Type[BaseModel] = self.registry.get_config(component_key, variant_key)
+[rank0]:                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/registry/registry.py", line 79, in get_config
+[rank0]:     entity = self._get_entity(component_key, variant_key)
+[rank0]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/registry/registry.py", line 89, in _get_entity
+[rank0]:     raise ValueError(f"[{component_key}][{variant_key}] are not valid keys in registry") from e
+[rank0]: ValueError: [model][direct] are not valid keys in registry
+
+[rank0]: The above exception was the direct cause of the following exception:
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/bin/modalities", line 7, in <module>
+[rank0]:     sys.exit(main())
+[rank0]:              ^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/click/core.py", line 1485, in __call__
+[rank0]:     return self.main(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/click/core.py", line 1406, in main
+[rank0]:     rv = self.invoke(ctx)
+[rank0]:          ^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/click/core.py", line 1873, in invoke
+[rank0]:     return _process_result(sub_ctx.command.invoke(sub_ctx))
+[rank0]:                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/click/core.py", line 1269, in invoke
+[rank0]:     return ctx.invoke(self.callback, **ctx.params)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/click/core.py", line 824, in invoke
+[rank0]:     return callback(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/__main__.py", line 121, in CMD_entry_point_run_modalities
+[rank0]:     raise RuntimeError(f"An error occurred while running the training: {e}. ") from e
+[rank0]: RuntimeError: An error occurred while running the training: [model][direct] are not valid keys in registry. 
+E1229 13:49:42.560000 1063352 site-packages/torch/distributed/elastic/multiprocessing/api.py:882] failed (exitcode: 1) local_rank: 0 (pid: 1063369) of binary: /home/s472389/miniconda3/envs/modalities/bin/python3.11
+Traceback (most recent call last):
+  File "/home/s472389/miniconda3/envs/modalities/bin/torchrun", line 7, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 357, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/torch/distributed/run.py", line 936, in main
+    run(args)
+  File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/torch/distributed/run.py", line 927, in run
+    elastic_launch(
+  File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 156, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/torch/distributed/launcher/api.py", line 293, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/home/s472389/miniconda3/envs/modalities/bin/modalities FAILED
+------------------------------------------------------------
+Failures:
+  <NO_OTHER_FAILURES>
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2025-12-29_13:49:42
+  host      : jn103.julia.lan
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 1063369)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+srun: error: jn103: task 0: Exited with exit code 1

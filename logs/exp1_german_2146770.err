@@ -1,0 +1,27 @@
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py:167: FutureWarning: With version 0.4, we upgraded FSDP to FSDP 2.0. Use get_fsdp_2_wrapped_model(...) and FSDP2WrappedModelConfig instead.
+  comp_config = component_config_type(**config_dict, strict=True)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/config/component_factory.py:194: FutureWarning: With version 0.4, we upgraded FSDP to FSDP 2.0. Use GeneralModelFactory.get_fsdp2_wrapped_model(...) instead.
+  component = component_type(**component_config_dict)
+model_factory - INFO - Rank 0 unsharded number of parameters: 124439808
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/torch/distributed/fsdp/_init_utils.py:430: UserWarning: FSDP is switching to use `NO_SHARD` instead of ShardingStrategy.FULL_SHARD since the world size is 1.
+  warnings.warn(
+model_factory - INFO - Rank 0 sharded number of parameters: 124439808
+INFO:model_factory:Rank 0 sharded number of parameters: 124439808
+wandb: Tracking run with wandb version 0.23.1
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in /home/s472389/modalities_test/wandb_storage/wandb/offline-run-20251229_172851-hgknjdk0
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/util.py:38: UserWarning: [91m Last step will not be logged. Since remaining_steps (76866) is not a multiple of training_log_interval_in_steps (100) [00m
+  warnings.warn(message_with_color_code)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/util.py:38: UserWarning: [91m Last step will not be evaluated. Since remaining_steps (76866) is not a multiple of evaluation_interval_in_steps (1000) [00m
+  warnings.warn(message_with_color_code)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/modalities/util.py:38: UserWarning: [91m Last step will not be checkpointed. Since remaining_steps (76866) is not a multiple of checkpointing_interval_in_steps (5000) [00m
+  warnings.warn(message_with_color_code)
+/home/s472389/miniconda3/envs/modalities/lib/python3.11/site-packages/torch/distributed/distributed_c10d.py:4876: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+  warnings.warn(  # warn only once
+main - INFO - Training model with 124439808 parameters.
+INFO:main:Training model with 124439808 parameters.
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd-jn118: error: *** JOB 2146770 ON jn118 CANCELLED AT 2025-12-29T17:29:12 ***
+slurmstepd-jn118: error: *** STEP 2146770.0 ON jn118 CANCELLED AT 2025-12-29T17:29:12 ***
+W1229 17:29:12.098000 1154294 site-packages/torch/distributed/elastic/agent/server/api.py:725] Received 15 death signal, shutting down workers
+W1229 17:29:12.099000 1154294 site-packages/torch/distributed/elastic/multiprocessing/api.py:908] Sending process 1154313 closing signal SIGTERM

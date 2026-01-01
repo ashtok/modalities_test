@@ -41,10 +41,10 @@ def main():
 
     for lang in LANGUAGES:
         print(f"\nProcessing language: {lang}")
-	if lang == "deu_Latn":
-		num_lines = 1_500_000
-	else:
-		num_lines = 1_500_000
+        if lang == "deu_Latn":
+		    num_lines = 1_500_000
+	    else:
+		    num_lines = 1_500_000
         
 	shard_urls = fetch_map(lang)
 

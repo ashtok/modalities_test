@@ -41,8 +41,12 @@ def main():
 
     for lang in LANGUAGES:
         print(f"\nProcessing language: {lang}")
-
-        shard_urls = fetch_map(lang)
+	if lang == "deu_Latn":
+		num_lines = 1_500_000
+	else:
+		num_lines = 1_500_000
+        
+	shard_urls = fetch_map(lang)
 
         if len(shard_urls) <= TARGET_INDEX:
             raise RuntimeError(f"Not enough shards for {lang}")

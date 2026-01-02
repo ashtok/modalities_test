@@ -96,7 +96,7 @@ python -m lm_eval \
 ```bash
 python -m lm_eval \
   --model hf \
-  --model_args pretrained=<checkpoint_path> \
+  --model_args pretrained=hf_models/exp1_german_only/.../hf_checkpoint_step180000 \
   --tasks ogx_flores200-nll-deu_Latn,ogx_flores200-nll-eng_Latn,ogx_flores200-nll-spa_Latn,ogx_flores200-nll-ita_Latn,ogx_flores200-nll-fra_Latn \
   --device cuda:0 \
   --batch_size 8 \

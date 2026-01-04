@@ -105,7 +105,7 @@ python -m lm_eval \
 
 ## Results
 
-**HellaSwagX**: No measurable improvement across the three setups under current data constraints.
+**HellaSwagX**: No measurable improvement across the three setups under current data constraints. (Current results: https://github.com/ashtok/modalities_test/tree/main/results)
 
 **FLORES200**: Evaluation blocked by GPU resource limits (`AssocGrpGRES`).
 
